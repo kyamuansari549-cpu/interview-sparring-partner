@@ -6,7 +6,9 @@ transcribes it, and gives you per-answer feedback plus an end-of-session report 
 sparring partner before real placements.
 
 **Live demo:** https://interview-sparring-partner.onrender.com (free tier — the first load
-after a quiet spell can take about a minute while the service wakes up.)
+after a quiet spell can take about a minute while the service wakes up.) The full voice loop
+works on the live demo too: there, transcription runs on Groq's hosted Whisper API
+(`ISP_TRANSCRIBE=groq`) instead of a local whisper.cpp server.
 
 ## Why I built this
 
@@ -18,7 +20,8 @@ Indian interviewers actually use, and keeps score like a strict judge.
 
 ## Known rough edges
 
-- The whisper.cpp server has to be started separately before the app is useful.
+- Locally, the whisper.cpp server has to be started separately before the app
+  is useful (the hosted demo sidesteps this with Groq's Whisper API).
   A one-command startup is on my list.
 - Scores wobble slightly between runs — the evaluator is an LLM, after all. The
   filler-word count, at least, is exact: it is counted in Python, never by the LLM.
@@ -104,6 +107,8 @@ Question audio: GET /api/session/{sid}/question/{qid}/audio returns MP3 from edg
 | `GROQ_MODEL` | `openai/gpt-oss-120b` | Groq model name |
 | `GEMINI_API_KEY` | — | Google Gemini cloud API key |
 | `WHISPER_URL` | `http://127.0.0.1:8080` | whisper.cpp server URL (speech-to-text) |
+| `ISP_TRANSCRIBE` | `local` | Speech-to-text backend: `local` (whisper.cpp) or `groq` (hosted Whisper API) |
+| `GROQ_WHISPER_MODEL` | `whisper-large-v3-turbo` | Groq Whisper model (groq transcription backend only) |
 | `TTS_VOICE` | `hi-IN-SwaraNeural` | edge-tts voice for spoken questions |
 
 ## Troubleshooting

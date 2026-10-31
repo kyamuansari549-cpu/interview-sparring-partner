@@ -44,6 +44,15 @@ OLLAMA_URL = os.getenv("ISP_OLLAMA_URL", "http://localhost:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("ISP_OLLAMA_MODEL", "cyberforge-v2")
 
 WHISPER_URL = os.getenv("WHISPER_URL", "http://127.0.0.1:8080").rstrip("/")
+
+# Speech-to-text backend: "local" = the whisper.cpp server above (the laptop
+# default); "groq" = Groq's hosted Whisper API, for hosted deploys like
+# Render where no local whisper.cpp can run. The Groq path needs GROQ_API_KEY.
+TRANSCRIBE_PROVIDER = os.getenv("ISP_TRANSCRIBE", "local").strip().lower()
+GROQ_WHISPER_MODEL = (
+    os.getenv("GROQ_WHISPER_MODEL", "whisper-large-v3-turbo").strip()
+    or "whisper-large-v3-turbo"
+)
 TTS_VOICE = os.getenv("TTS_VOICE", "hi-IN-SwaraNeural")
 
 DATA_DIR = os.getenv("ISP_DATA_DIR", os.path.join(_REPO_ROOT, "data"))

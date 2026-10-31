@@ -102,7 +102,7 @@ function currentQuestion() {
 function renderQuestion() {
   const q = currentQuestion();
   $("result-panel").classList.add("hidden");
-  $("q-category").textContent = q.category || "general";
+  $("q-category").textContent = (q.category || "general").replace(/_/g, " ");
   $("q-difficulty").textContent = q.difficulty || "";
   $("q-count").textContent = "Question " + (state.qi + 1) + " of " + state.questions.length;
   $("q-text").textContent = q.question;

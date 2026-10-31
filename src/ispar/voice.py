@@ -1,10 +1,14 @@
 """Voice I/O for the Interview Sparring Partner.
 
-transcribe_whisper(audio_path) -> str   (whisper.cpp server, default Hindi)
+transcribe_whisper(audio_path) -> str   (speech-to-text, default Hindi)
 synthesize_edge(text, mp3_path) -> Path (edge-tts, mp3 output for the web UI)
 
-Web clients record webm/opus, so non-WAV input is converted to 16kHz mono
-WAV with the bundled imageio-ffmpeg binary before being sent to whisper.cpp.
+Two transcription backends, picked by ISP_TRANSCRIBE in config: the local
+whisper.cpp server (the laptop setup), or Groq's hosted Whisper API (the
+Render deploy, where no local server can run). Web clients record webm/opus,
+so on the local path non-WAV input is converted to 16kHz mono WAV with the
+bundled imageio-ffmpeg binary before being sent to whisper.cpp; the Groq
+API accepts the recording as-is.
 """
 
 import subprocess
@@ -69,11 +73,15 @@ def transcribe_whisper(
     server_url: str | None = None,
     language: str = "hi",
 ) -> str:
-    """Transcribe an audio file with the whisper.cpp server."""
-    # Note to self: whisper is a separate process that has to be started by
-    # hand (README, setup step 3). When this starts failing, it is almost
-    # never the code — the server just isn't running.
+    """Transcribe an audio file (backend chosen by ISP_TRANSCRIBE)."""
+    # Note to self: on the local path, whisper is a separate process that
+    # has to be started by hand (README, setup step 3). When local
+    # transcription starts failing, it is almost never the code — the
+    # server just isn't running.
     from . import config
+
+    if config.TRANSCRIBE_PROVIDER == "groq":
+        return _transcribe_groq(audio_path, language)
 
     audio_path = Path(audio_path)
     if server_url is None:
@@ -119,6 +127,55 @@ def transcribe_whisper(
     finally:
         if temp_wav is not None:
             temp_wav.unlink(missing_ok=True)
+
+
+def _transcribe_groq(audio_path: str | Path, language: str) -> str:
+    """Transcribe with Groq's hosted Whisper API (OpenAI-compatible).
+
+    Used when ISP_TRANSCRIBE=groq — hosted deploys with no local
+    whisper.cpp. The recording is sent as-is (webm/mp3/wav are all
+    accepted), so this path needs no ffmpeg conversion.
+    """
+    from . import config
+
+    keys = config._provider_keys("groq")
+    if not keys:
+        raise VoiceError(
+            "Groq transcription failed (ISP_TRANSCRIBE=groq but "
+            "GROQ_API_KEY is not set)"
+        )
+    audio_path = Path(audio_path)
+    try:
+        with open(audio_path, "rb") as f:
+            r = requests.post(
+                "https://api.groq.com/openai/v1/audio/transcriptions",
+                headers={"Authorization": f"Bearer {keys[0]}"},
+                files={"file": (audio_path.name, f)},
+                data={
+                    "model": config.GROQ_WHISPER_MODEL,
+                    "language": language,
+                    "response_format": "json",
+                    "temperature": "0.0",
+                },
+                timeout=120,
+            )
+    except requests.RequestException as exc:
+        raise VoiceError(
+            f"Groq transcription failed (network error): {exc}"
+        ) from exc
+    try:
+        r.raise_for_status()
+    except requests.HTTPError as exc:
+        raise VoiceError(
+            f"Groq transcription failed (HTTP {r.status_code}): "
+            f"{r.text[:200]}"
+        ) from exc
+    try:
+        return r.json()["text"].strip()
+    except (ValueError, KeyError, TypeError) as exc:
+        raise VoiceError(
+            f"Groq transcription failed (bad JSON response): {exc}"
+        ) from exc
 
 
 def synthesize_edge(
