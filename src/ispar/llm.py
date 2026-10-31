@@ -4,6 +4,10 @@ Why a chain at all: in Oct 2026 three Groq keys in a row died on me with
 401 "invalid API key", so Gemini became primary and Groq the fallback.
 One rule from day one, and it stays: failures raise LLMError, never a
 canned reply. A fake evaluation would ruin the whole point of practice.
+
+Update, end of Oct 2026: a working Groq key turned up after all, so Groq
+(openai/gpt-oss-120b) is primary again and Gemini the fallback. The order
+lives in config / ISP_LLM_CHAIN, not in this file.
 """
 
 from __future__ import annotations
@@ -112,6 +116,16 @@ def _cloud_request(
             f"HTTP {resp.status_code} ({resp.text[:200].strip()})"
         )
     if resp.status_code in (400, 401):
+        # Groq's gpt-oss models sometimes answer a json_mode request with
+        # 400 "json_validate_failed" — the model failed to produce JSON,
+        # which is a per-model capability failure, not a bad request.
+        # Fall over to the next provider instead of killing the whole
+        # chain (found live on Render, 31 Oct 2026, Groq as primary).
+        # Every other 400, and all 401s, stay fatal.
+        if resp.status_code == 400 and "json_validate_failed" in resp.text:
+            raise _Failover(
+                f"HTTP 400 json_validate_failed ({resp.text[:200].strip()})"
+            )
         raise LLMError(
             f"{provider} request failed: HTTP {resp.status_code} "
             f"({resp.text[:200].strip()})"

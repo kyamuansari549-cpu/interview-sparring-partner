@@ -11,7 +11,9 @@ services:
       - key: ISP_LLM_PROVIDER
         value: cloud
       - key: ISP_LLM_CHAIN
-        value: gemini,groq
+        value: groq,gemini
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
       - key: GEMINI_API_KEY
         sync: false
       - key: GROQ_API_KEY

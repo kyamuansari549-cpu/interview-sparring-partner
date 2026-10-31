@@ -64,10 +64,10 @@ Question audio: GET /api/session/{sid}/question/{qid}/audio returns MP3 from edg
    ```
    Keep this terminal open while using the app.
 
-4. LLM — default is **Gemini cloud** (`gemini-3.6-flash`, free tier at aistudio.google.com):
-   - Copy `.env.example` to `.env` and put your key in `GEMINI_API_KEY`.
-     `GROQ_API_KEY` is optional — Groq is the automatic fallback if Gemini
-     rate-limits (chain order: `ISP_LLM_CHAIN=gemini,groq`).
+4. LLM — default is **Groq cloud** (`openai/gpt-oss-120b`):
+   - Copy `.env.example` to `.env` and put your key in `GROQ_API_KEY`.
+     `GEMINI_API_KEY` is optional — Gemini (`gemini-3.6-flash`) is the automatic
+     fallback if Groq rate-limits (chain order: `ISP_LLM_CHAIN=groq,gemini`).
    - Prefer local instead? Set `ISP_LLM_PROVIDER=ollama`, install Ollama, then
      `ollama pull cyberforge-v2` (or your own model) and keep Ollama running
      on `http://localhost:11434`.
@@ -99,8 +99,9 @@ Question audio: GET /api/session/{sid}/question/{qid}/audio returns MP3 from edg
 | `ISP_LLM_PROVIDER` | `ollama` | Primary LLM provider: `ollama`, `groq`, or `gemini` |
 | `ISP_OLLAMA_URL` | `http://localhost:11434` | Local Ollama base URL |
 | `ISP_OLLAMA_MODEL` | `cyberforge-v2` | Ollama model name for question gen + evaluation |
-| `ISP_LLM_CHAIN` | `gemini,groq` | Ordered fallback providers if the primary fails |
+| `ISP_LLM_CHAIN` | `groq,gemini` | Ordered fallback providers if the primary fails |
 | `GROQ_API_KEY` | — | Groq cloud API key |
+| `GROQ_MODEL` | `openai/gpt-oss-120b` | Groq model name |
 | `GEMINI_API_KEY` | — | Google Gemini cloud API key |
 | `WHISPER_URL` | `http://127.0.0.1:8080` | whisper.cpp server URL (speech-to-text) |
 | `TTS_VOICE` | `hi-IN-SwaraNeural` | edge-tts voice for spoken questions |

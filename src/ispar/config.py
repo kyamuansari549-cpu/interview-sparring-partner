@@ -1,7 +1,8 @@
 """Settings — everything comes from env vars (see .env.example).
 
 The defaults below are the setup that actually runs on my laptop:
-cloud LLM with Gemini first and Groq as fallback, whisper.cpp on :8080.
+cloud LLM with Groq first (openai/gpt-oss-120b) and Gemini as fallback,
+whisper.cpp on :8080.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ LLM_PROVIDER = os.getenv("ISP_LLM_PROVIDER", "cloud").strip().lower()  # "cloud"
 
 LLM_CHAIN = [
     p.strip().lower()
-    for p in os.getenv("ISP_LLM_CHAIN", "gemini,groq").split(",")
+    for p in os.getenv("ISP_LLM_CHAIN", "groq,gemini").split(",")
     if p.strip()
 ]
 
