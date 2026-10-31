@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Sparring Partner — practice bouts for placement interviews</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="wordmark">
+        <p class="over-label">Mock Interview Gym · Lucknow</p>
+        <h1>Interview Sparring Partner</h1>
+      </div>
+      <div class="masthead-meta">
+        <p>Est. 2026</p>
+        <p>Practice bouts,<br />not tests.</p>
+      </div>
+    </div>
+    <p class="tagline">Sawal tumhare resume se banenge. Jawab tumhari awaaz me hoga. Score judges jaisa sakht milega.</p>
+  </header>
+
+  <main class="container">
+    <div id="error-banner" class="error-banner hidden"></div>
+
+    <!-- Resume upload -->
+    <section id="view-upload" class="view">
+      <div class="card">
+        <p class="card-label">Bout setup</p>
+        <h2>Pehle resume, phir ring.</h2>
+        <p class="lede">Apna resume (PDF) upload karo. Sawal usi se banenge — tumhare projects, tumhari skills. Koi ratta-rataya question bank nahi chalega yahan.</p>
+        <div class="upload-row">
+          <input type="file" id="resume-file" accept="application/pdf" />
+          <button id="btn-upload" class="btn primary">Upload resume</button>
+        </div>
+        <p id="upload-status" class="status"></p>
+        <div class="rules">
+          <p class="rules-title">Gym ke 3 rules</p>
+          <ol>
+            <li>Jawab <strong>bolkar</strong> dena hai. Typing wala interview nahi hota.</li>
+            <li>Filler words gine jayenge — um, uh, matlab, basically, sab.</li>
+            <li>Har round ke baad scorecard milega. Dil par mat lena, drill par lena.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parsed profile -->
+    <section id="view-ready" class="view hidden">
+      <div class="card">
+        <p class="card-label">Tale of the tape</p>
+        <h2>Resume padh liya.</h2>
+        <div class="tape-row">
+          <span class="tape-key">Fighter</span>
+          <span id="ready-name" class="tape-name"></span>
+        </div>
+        <div class="tape-row">
+          <span class="tape-key">Skills</span>
+          <div id="ready-skills" class="chips"></div>
+        </div>
+        <div class="tape-row">
+          <span class="tape-key">Projects</span>
+          <div id="ready-projects" class="chips"></div>
+        </div>
+        <p class="lede">Sawal inhi cheezon par honge. Taiyaar ho to ring me aao.</p>
+        <button id="btn-start" class="btn primary">Start sparring</button>
+        <p id="ready-status" class="status"></p>
+      </div>
+    </section>
+
+    <!-- The bout -->
+    <section id="view-interview" class="view hidden">
+      <div class="card question-card">
+        <div class="round-strip">
+          <p class="question-count" id="q-count"></p>
+          <div id="q-ticks" class="ticks"></div>
+        </div>
+        <p class="stamps"><span id="q-category" class="stamp"></span><span id="q-difficulty" class="stamp stamp-tilt"></span></p>
+        <h2 id="q-text" class="question-text"></h2>
+        <div class="row">
+          <button id="btn-play" class="btn">Sawal suno</button>
+          <audio id="q-audio" controls class="hidden"></audio>
+        </div>
+        <div class="row">
+          <button id="btn-record" class="btn record">&#9679; Jawab record karo</button>
+        </div>
+        <p id="interview-status" class="status"></p>
+      </div>
+
+      <div id="result-panel" class="card hidden">
+        <p class="card-label">Judges' scorecard</p>
+        <h3>Tumhara jawab</h3>
+        <p id="r-transcript" class="transcript"></p>
+        <div class="score-block">
+          <div class="score-main"><span id="r-score" class="score-big"></span><span class="score-den">/10 is round ka score</span></div>
+          <div class="score-side"><span id="r-fillers" class="score-mid"></span><span class="score-den">filler words</span></div>
+        </div>
+        <div class="judges">
+          <div class="judge"><h4>Content</h4><p id="r-content"></p></div>
+          <div class="judge"><h4>Structure</h4><p id="r-structure"></p></div>
+          <div class="judge"><h4>Clarity</h4><p id="r-clarity"></p></div>
+        </div>
+        <h4>Corner notes — agle round ke drills</h4>
+        <ul id="r-improvements" class="improvements"></ul>
+        <button id="btn-next" class="btn primary">Agla round</button>
+      </div>
+    </section>
+
+    <!-- Final scorecard -->
+    <section id="view-report" class="view hidden">
+      <div class="card">
+        <p class="card-label">Final scorecard</p>
+        <h2>Bout khatam.</h2>
+        <div class="score-block">
+          <div class="score-main"><span id="rep-avg" class="score-big"></span><span class="score-den">/10 judges' average</span></div>
+          <div class="score-side"><span id="rep-fillers" class="score-mid"></span><span class="score-den">total fillers</span></div>
+        </div>
+        <h4>Round by round</h4>
+        <ul id="rep-per-question" class="score-list"></ul>
+        <h4>Jahan points kate</h4>
+        <ul id="rep-top-improvements" class="improvements"></ul>
+        <h4>Sabse kamzor rounds — coach ka jawab</h4>
+        <div id="rep-model-answers"></div>
+        <button id="btn-restart" class="btn primary">Ek aur bout</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Interview Sparring Partner — placement season ke liye ek practice tool. Asli interview me bhi yahi hoga: sawal suno, ek saans lo, bolo.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

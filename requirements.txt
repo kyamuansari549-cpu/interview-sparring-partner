@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pdfplumber
+requests
+edge-tts
+imageio-ffmpeg
+python-multipart
+python-dotenv
+
+# LLM is called over plain HTTP (requests) — no heavy LLM SDKs needed.
+# Dev/test extras (not installed by default): pytest, httpx

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: interview-sparring-partner
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: PYTHONPATH=src uvicorn ispar.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: ISP_LLM_PROVIDER
+        value: cloud
+      - key: ISP_LLM_CHAIN
+        value: gemini,groq
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
