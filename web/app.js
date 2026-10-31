@@ -63,6 +63,8 @@ $("btn-upload").addEventListener("click", async () => {
 
 function renderReady() {
   $("ready-name").textContent = (state.profile && state.profile.name) || "Unknown";
+  $("ready-initial").textContent =
+    (((state.profile && state.profile.name) || "?").trim().charAt(0) || "?").toUpperCase();
   $("ready-skills").innerHTML = ((state.profile && state.profile.skills) || [])
     .map((s) => `<span class="chip">${esc(s)}</span>`).join("");
   $("ready-projects").innerHTML = ((state.profile && state.profile.projects) || [])
@@ -102,11 +104,10 @@ function renderQuestion() {
   $("result-panel").classList.add("hidden");
   $("q-category").textContent = q.category || "general";
   $("q-difficulty").textContent = q.difficulty || "";
-  $("q-count").textContent = "Round " + (state.qi + 1) + " of " + state.questions.length;
+  $("q-count").textContent = "Question " + (state.qi + 1) + " of " + state.questions.length;
   $("q-text").textContent = q.question;
-  $("q-ticks").innerHTML = state.questions
-    .map((_, i) => '<span class="tick' + (i < state.qi ? " done" : i === state.qi ? " now" : "") + '"></span>')
-    .join("");
+  $("q-progress-fill").style.width =
+    ((state.qi + 1) / state.questions.length) * 100 + "%";
   $("interview-status").textContent = "";
   const audio = $("q-audio");
   audio.pause();
@@ -130,7 +131,7 @@ let audioChunks = [];
 
 function resetRecordButton() {
   const btn = $("btn-record");
-  btn.textContent = "● Jawab record karo";
+  $("record-label").textContent = "Jawab record karo";
   btn.classList.remove("recording");
 }
 
@@ -148,7 +149,7 @@ $("btn-record").addEventListener("click", async () => {
     mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
     mediaRecorder.onstop = submitAnswer;
     mediaRecorder.start();
-    btn.textContent = "■ Stop karo";
+    $("record-label").textContent = "Stop karo";
     btn.classList.add("recording");
     $("interview-status").textContent = "Recording chal rahi hai — jawab bolo, phir Stop dabao.";
   } catch (err) {
@@ -183,6 +184,7 @@ function renderResult(data) {
   const ev = data.evaluation || {};
   $("r-transcript").textContent = data.transcript || "(no transcript)";
   $("r-score").textContent = ev.score_1_10 != null ? ev.score_1_10 : "-";
+  $("r-bar").style.width = (ev.score_1_10 != null ? ev.score_1_10 * 10 : 0) + "%";
   $("r-fillers").textContent = ev.filler_count != null ? ev.filler_count : "-";
   $("r-content").textContent = ev.content_feedback || "";
   $("r-structure").textContent = ev.structure_feedback || "";
@@ -191,7 +193,7 @@ function renderResult(data) {
     .map((i) => `<li>${esc(i)}</li>`).join("");
   $("result-panel").classList.remove("hidden");
   $("btn-next").textContent =
-    state.qi + 1 < state.questions.length ? "Agla round" : "Final scorecard";
+    state.qi + 1 < state.questions.length ? "Agla sawal" : "Poori report dekho";
 }
 
 // next round, or the final scorecard
@@ -241,6 +243,11 @@ $("btn-restart").addEventListener("click", () => {
   $("resume-file").value = "";
   $("upload-status").textContent = "";
   showView("view-upload");
+});
+
+$("resume-file").addEventListener("change", () => {
+  const f = $("resume-file").files[0];
+  if (f) $("dz-sub").textContent = f.name;
 });
 
 // first paint
