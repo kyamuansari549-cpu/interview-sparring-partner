@@ -5,6 +5,9 @@ interview questions, speaks each question aloud in Hinglish, listens to your spo
 transcribes it, and gives you per-answer feedback plus an end-of-session report — like a
 sparring partner before real placements.
 
+**Live demo:** https://interview-sparring-partner.onrender.com (free tier — the first load
+after a quiet spell can take about a minute while the service wakes up.)
+
 ## Why I built this
 
 I'm in my final year, and placement season made one thing clear: solving problems on
